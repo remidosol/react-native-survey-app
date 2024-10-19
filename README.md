@@ -1,104 +1,157 @@
-# Survey App - React Native
+# Survey App - React Native Project
 
-This is a React Native project developed using `react-native-paper` for UI components, providing a survey system along with features like profile management, survey detail tracking, in-app notifications, and localization.
+## Overview
+
+This is a mobile survey application built using React Native with Expo. It provides users with an interactive interface to complete surveys, view their survey history, and manage profile settings. The app supports localization for both English and Turkish languages and uses a clean and modular codebase to ensure scalability and maintainability.
 
 ## Features
 
-- **Profile Management**: Manage user profiles including nickname, email, and phone number.
-- **Survey System**: Conduct surveys with different question types, including single choice, multiple choice, and slider.
-- **Survey Detail Tracking**: View completed surveys with time and score tracking.
-- **In-App Notifications**: Show success, error, or information notifications.
-- **Localization**: Support multiple languages (e.g., English and Turkish).
-- **Persistent Survey State**: Save survey progress locally, allowing users to continue where they left off.
+- User Authentication (Login and Sign-Up)
+- Interactive Surveys with Various Question Types (Multiple Choice, Slider, Single Choice)
+- Survey Progress Saving and Resumption
+- Survey History Overview
+- In-App Notification System
+- Localization Support (English and Turkish)
+- Gradient Background Components with Customizable Transparency
+- Animated SVG Graphics
+- Custom Bottom Tab Navigation
+- Language Switcher on Profile Page
+- Data Persistence with AsyncStorage
 
-## Getting Started
+## Technologies Used
 
-### Prerequisites
+### Frameworks & Libraries
 
-- [Node.js](https://nodejs.org/en/download/)
-- [Expo CLI](https://docs.expo.dev/get-started/installation/)
-- [Yarn](https://classic.yarnpkg.com/en/docs/install) or npm
+- **React Native**: Core library for mobile development.
+- **Expo**: Framework and platform for universal React applications.
+- **React Native Paper**: For UI components like buttons, switches, and progress bars.
+- **React Navigation**: For managing navigation throughout the app.
+- **Redux Toolkit**: For state management.
+- **React-Redux**: To connect React components with the Redux store.
+- **Redux Thunk**: For async actions in Redux.
+- **React Native SVG**: For rendering SVGs and creating animations.
+- **React Native Circular Progress**: For progress indicators with animations.
 
-### Installation
+### State Management
 
-1. Clone the repository:
+- **Redux Toolkit & Redux Thunk**: Manages app state, including user authentication and survey data.
+
+### Localization & i18n
+
+- **i18next**: For handling localization (supports English and Turkish languages).
+- **react-i18next**: Integration with React components for localization.
+
+### Asynchronous Storage
+
+- **AsyncStorage**: Used for storing user data (e.g., survey progress and authentication tokens).
+
+### User Interface & Design
+
+- **React Native Paper**: Provides UI components like buttons, inputs, progress bars, and more.
+- **Expo Linear Gradient**: Adds linear gradient backgrounds to components.
+
+### Icons & Animations
+
+- **@expo/vector-icons**: For using icons such as Ionicons.
+- **React Native Animated API**: To create animations (e.g., in-app notifications, animated SVGs).
+
+### Additional Tools & Services
+
+- **Hermes**: JavaScript engine to optimize app performance.
+- **React Native DevTools**: For debugging and optimizing React Native apps.
+
+## Project Structure
+
+The project follows a clean and modular folder structure:
+
+```
+root
+├── src
+│   ├── api
+│   ├── components
+│   │   ├── Animated
+│   │   ├── Survey
+│   │   └── ... Other Custom Components
+│   ├── hooks
+│   ├── localization
+│   ├── navigation
+│   ├── screens
+│   │   ├── Auth
+│   │   ├── Survey
+│   │   ├── HomeScreen.tsx
+│   │   └── ProfileScreen.tsx
+│   ├── store
+│   ├── styles
+│   ├── types
+│   ├── utils
+│   ├── i18n.ts
+│   └── data.ts
+└── assets
+```
+
+### Key Folders
+
+- **api**: Contains functions for making network requests (e.g., authentication).
+- **components**: Reusable UI components like buttons, gradient backgrounds, animated SVGs, etc.
+- **hooks**: Custom React hooks, including hooks for saving survey data.
+- **i18n**: Localization files and configuration.
+- **navigation**: Contains all navigators used in the app (stack navigators, bottom tab navigators, etc.).
+- **screens**: All individual screens, organized by feature (e.g., Auth, Home, Profile, Survey).
+- **slices**: Redux slices for managing different parts of the state.
+- **store**: Redux store configuration.
+- **utils**: Utility functions used throughout the app.
+
+All tests have been done on Pixel_3a_API_34_extension_level_7_arm64-v8a Android emulator.
+
+## Setup and Installation
+
+1. **Clone the Repository**:
 
    ```sh
-   git clone https://github.com/yourusername/survey-app.git
-   cd survey-app
+   git clone https://github.com/remidosol/react-native-survey-app.git
+   cd react-native-survey-app
    ```
 
-2. Install dependencies:
+2. **Install Dependencies**:
 
    ```sh
-   yarn install
-   # or
-   npm install
+   yarn
    ```
 
-3. Start the Expo server:
+3. **Start the App**:
 
    ```sh
    npx expo start
    ```
 
-### Running on a Device or Simulator
+4. **Run on a Physical Device**: Make sure you have the Expo Go app installed, and scan the QR code generated.
 
-- Scan the QR code with the Expo Go app on your mobile device.
-- You can also run the project in an iOS or Android simulator.
+## How to Run with Hermes
 
-## Project Structure
+To enable Hermes engine for the app:
 
-- **src/components**: Reusable components, including `InAppNotification`, `SurveyHeader`, `SurveyQuestion`, `ProfileScreen`, and `SurveyDetail`.
-- **src/screens**: Application screens such as `HomeScreen`, `ProfileScreen`, `SurveyScreen`, and `SurveyDetailScreen`.
-- **src/navigation**: Handles navigation across screens, including stack and bottom tab navigators.
-- **src/store**: Redux store setup, including slices such as `userSlice` for handling user data and login data.
-- **src/i18n**: Manages localization and language switching.
-- **src/hooks**: Custom hooks for data fetching and state management, including survey progress tracking.
+1. Add `"jsEngine": "hermes"` to your `expo` configuration in `app.json`.
+2. Run the app in development mode with:
 
-## Key Features Overview
+   ```sh
+   npx expo start --dev-client
+   ```
 
-### Survey System
+## Usage Instructions
 
-The survey system allows users to take part in surveys with different types of questions:
+- **Authentication**: Sign up or log in to begin using the app.
+- **Survey Interaction**: Complete surveys with different types of questions. The progress will be saved locally.
+- **Profile Management**: Update profile details and switch between languages from the Profile screen.
 
-- **Single Choice Questions**: Users can select one answer from a list of options.
-- **Slider Questions**: Users can adjust a slider value (e.g., to express satisfaction levels).
-- **Multiple Choice Questions**: Users can select multiple answers.
-- **Survey Progress Tracking**: Users can continue a survey from where they left off.
+## Future Improvements
 
-### In-App Notification System
-
-The in-app notification system provides feedback on user actions (e.g., successful survey submission or error messages) using `react-native-paper` components and an `Animated` view to show a notification bar at the top of the screen.
-
-### Localization
-
-The app supports multiple languages, allowing users to switch between available languages such as English and Turkish.
-
-### Persistent Storage
-
-Survey answers and progress are saved using `AsyncStorage`, allowing users to continue surveys if they leave the app or experience interruptions.
-
-## Libraries and Tools Used
-
-- [React Native](https://reactnative.dev/)
-- [Expo](https://expo.dev/)
-- [React Native Paper](https://callstack.github.io/react-native-paper/): UI components
-- [Redux Toolkit](https://redux-toolkit.js.org/): State management
-- [React Navigation](https://reactnavigation.org/): Navigation between screens
-- [i18next](https://www.i18next.com/): Localization
-- [AsyncStorage](https://react-native-async-storage.github.io/async-storage/): Persistent storage for survey progress
-
-## Available Scripts
-
-- `expo start`: Start the development server.
-- `yarn android`: Run the app on an Android emulator.
-- `yarn ios`: Run the app on an iOS simulator.
-
-## Contributing
-
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+- **Backend Integration**: Integrate with a backend to persist survey data in a database.
+- **Push Notifications**: Add push notifications for survey reminders.
+- **Offline Mode**: Improve offline data handling for better user experience.
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+[MIT](LICENSE)
+
+---
+Thank you for using the Survey App! Feel free to contribute and report any issues you encounter.
