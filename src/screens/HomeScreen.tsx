@@ -13,7 +13,7 @@ import {
   sliderQuestionsData,
   SurveyQuestionData,
 } from "../data";
-import { QuestionType } from "../types/survey";
+import { QuestionType, SurveyScreenRouteParams } from "../types/survey";
 import { getRandomBytes } from "expo-crypto";
 import { faker } from "@faker-js/faker";
 import { User } from "../types/auth";
@@ -29,7 +29,11 @@ type Props = {
 
 const HomeScreen = ({ navigation, route }: Props) => {
   const { t } = useTranslation();
-  const [surveyQuestionsData, setSurveyQuestionsData] = useState<SurveyQuestionData<QuestionType>[]>([]);
+  const [surveyQuestionsData, setSurveyQuestionsData] = useState<SurveyScreenRouteParams>({
+    surveyId: "",
+    title: "",
+    surveyQuestionsData: [],
+  });
 
   const questions = [singleChoiceQuestionsData, sliderQuestionsData, multipleChoiceQuestionsData];
 
@@ -42,11 +46,14 @@ const HomeScreen = ({ navigation, route }: Props) => {
   };
 
   useEffect(() => {
-    const qs: SurveyQuestionData<QuestionType>[] = [];
+    const qs: SurveyScreenRouteParams = { surveyId: "", title: "", surveyQuestionsData: [] };
     for (let i = 0; i < 10; i++) {
       const rand = Math.floor(Math.random() * 2) + Math.round(Math.random() * 1);
-      qs.push(questions[rand][i]);
+      qs.surveyQuestionsData.push(questions[rand][i]);
     }
+
+    qs.surveyId = getRandomBytes(16).toString();
+    qs.title = faker.food.fruit().toUpperCase();
 
     setSurveyQuestionsData(qs);
     getUserDataFromStorage();
@@ -54,9 +61,7 @@ const HomeScreen = ({ navigation, route }: Props) => {
 
   const startSurvey = () => {
     navigation?.navigate("Survey", {
-      surveyQuestionsData,
-      title: faker.food.fruit().toUpperCase(),
-      surveyId: getRandomBytes(16).toString(),
+      ...surveyQuestionsData,
     });
   };
 

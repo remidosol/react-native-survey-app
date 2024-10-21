@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView } from "react-native";
 import Icon from "@expo/vector-icons/Ionicons";
 import { User } from "../types/auth";
-import { getUser } from "../store/slices";
+import { getUser, logout } from "../store/slices";
 import { useTranslation } from "react-i18next";
-import { getUserData } from "../utils/userStorage";
+import { clearUserData, getUserData, saveUserData } from "../utils/userStorage";
 import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { AppStackParamList } from "../navigation/AppNavigator";
@@ -13,12 +13,13 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "../store";
 import useSaveUserData from "../hooks/useUserData";
 import InAppNotification from "../components/Animated/AnimatedInAppNotification";
+import Button from "../components/Button";
 
-type ProfileScreenNavigationProp = StackNavigationProp<MainTabParamList, "Profile">;
+type ProfileScreenNavigationProp = StackNavigationProp<AppStackParamList, "Profile">;
 
 type Props = {
   navigation?: ProfileScreenNavigationProp;
-  route?: RouteProp<MainTabParamList, "Profile">;
+  route?: RouteProp<AppStackParamList, "Profile">;
 };
 
 const ProfileScreen = ({ navigation, route }: Props) => {
@@ -69,6 +70,14 @@ const ProfileScreen = ({ navigation, route }: Props) => {
     }
   };
 
+  const handleLogout = async (): Promise<void> => {
+    dispatch(logout());
+
+    await clearUserData();
+
+    navigation?.navigate("Login", {});
+  };
+
   useEffect(() => {
     getProfileData();
   }, []);
@@ -82,7 +91,7 @@ const ProfileScreen = ({ navigation, route }: Props) => {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <InAppNotification message={errMessage} type='error' show={showNotification} />
       <View style={styles.headerContainer}>
         <Icon name='person' size={30} color='#0300A3' />
@@ -123,7 +132,10 @@ const ProfileScreen = ({ navigation, route }: Props) => {
       <TouchableOpacity style={styles.linkItem}>
         <Text style={styles.linkLabel}>{t("terms_and_conditions")}</Text>
       </TouchableOpacity>
-    </View>
+      <Button style={styles.logoutButton} onPress={handleLogout}>
+        {t("logout")}
+      </Button>
+    </ScrollView>
   );
 };
 
@@ -132,7 +144,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#ffffff",
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 60,
   },
   headerContainer: {
     flexDirection: "row",
@@ -177,6 +189,12 @@ const styles = StyleSheet.create({
   linkLabel: {
     color: "#0300A3",
     fontWeight: "bold",
+  },
+  logoutButton: {
+    margin: 20,
+    backgroundColor: "#0300A3",
+    color: "#fff",
+    fontWeight: 700,
   },
 });
 

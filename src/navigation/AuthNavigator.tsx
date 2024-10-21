@@ -20,6 +20,7 @@ export type AuthStackParamList = {
 };
 
 const AuthStack = createStackNavigator<AuthStackParamList>();
+
 export default function AuthNavigator() {
   const isAuthenticated = useSelector((state: RootState) => !!state.auth.token);
   const { t } = useTranslation();
