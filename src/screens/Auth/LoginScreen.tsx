@@ -28,7 +28,7 @@ type Props = {
 
 const LoginScreen = ({ navigation, route: _route }: Props) => {
   const { t } = useTranslation();
-  const [userId, setUserId] = useState(""); // 1
+  const [userId, setUserId] = useState<number | null>(null); // 1
   const [username, setUsername] = useState(""); // johnd
   const [password, setPassword] = useState(""); // m38rmF$
   const [secureTextEntry, setSecureTextEntry] = useState(true);
@@ -80,6 +80,7 @@ const LoginScreen = ({ navigation, route: _route }: Props) => {
       setIsLoading(false);
       console.log(result);
       setUserData(result.payload);
+      setUserId(1);
     } else if (getUser.rejected.match(result)) {
       setIsLoading(false);
       setErrMessage(t("login_error"));
@@ -91,10 +92,10 @@ const LoginScreen = ({ navigation, route: _route }: Props) => {
     console.log(isKvkkAlreadyAccepted);
 
     if (!isKvkkAlreadyAccepted) {
-      navigation?.push("KVKK", { userId, token });
+      navigation?.push("KVKK", { userId: userId ?? 1, token });
     }
 
-    navigation?.push("MainTabs", { userId, token });
+    navigation?.push("MainTabs", { userId: userId ?? 1, token });
   };
 
   return (

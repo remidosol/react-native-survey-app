@@ -2,7 +2,7 @@ import { User } from "./auth";
 import { SurveyAnswer } from "./survey";
 
 export type BaseNavigationRouteParam = {
-  userId?: string;
+  userId?: number;
   token?: string;
 };
 
@@ -13,7 +13,7 @@ export type UseSaveUserDataProps = {
 
 export type UseSaveSurveyDataProps = {
   surveyId: string;
-  userId: string;
+  userId: number;
   title: string;
   surveyAnswers: SurveyAnswer[];
   isSurveyCompleted: boolean;

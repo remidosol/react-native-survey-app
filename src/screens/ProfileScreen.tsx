@@ -1,124 +1,182 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
-import { Text, Switch, List, Divider } from "react-native-paper";
-import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useTranslation } from "react-i18next";
-import { LANGUAGE_STORAGE_KEY } from "../i18n";
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
+import Icon from "@expo/vector-icons/Ionicons";
 import { User } from "../types/auth";
+import { getUser } from "../store/slices";
+import { useTranslation } from "react-i18next";
 import { getUserData } from "../utils/userStorage";
+import { RouteProp } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { AppStackParamList } from "../navigation/AppNavigator";
+import { MainTabParamList } from "../navigation/MainTabNavigator";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../store";
+import useSaveUserData from "../hooks/useUserData";
+import InAppNotification from "../components/Animated/AnimatedInAppNotification";
 
-const ProfileScreen = () => {
-  const { t, i18n } = useTranslation();
-  const [isSwitchOn, setIsSwitchOn] = useState(i18n.language !== "en-US");
+type ProfileScreenNavigationProp = StackNavigationProp<MainTabParamList, "Profile">;
 
-  const onToggleSwitch = async () => {
-    const newLanguage = isSwitchOn ? "en" : "tr";
-    i18n.changeLanguage(newLanguage);
-    setIsSwitchOn(!isSwitchOn);
-    await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, newLanguage);
-  };
+type Props = {
+  navigation?: ProfileScreenNavigationProp;
+  route?: RouteProp<MainTabParamList, "Profile">;
+};
 
-  const [userData, setUserData] = useState<Partial<User> | null>(null);
+const ProfileScreen = ({ navigation, route }: Props) => {
+  const { t } = useTranslation();
+  const dispatch = useDispatch<AppDispatch>();
+  const [profileData, setProfileData] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [errMessage, setErrMessage] = useState("");
+  const [showNotification, setShowNotification] = useState(false);
 
-  const getUserDataFromStorage = async () => {
-    const parsedUserData = await getUserData();
+  useSaveUserData({ user: profileData ?? undefined });
 
-    setUserData(parsedUserData?.user ?? null);
-  };
+  const getProfileData = async (): Promise<void> => {
+    const availableProfileData = await getUserData();
 
-  const loadLanguage = async () => {
-    const storedLanguage = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
-    if (storedLanguage && storedLanguage !== i18n.language) {
-      i18n.changeLanguage(storedLanguage);
-      setIsSwitchOn(storedLanguage === "tr");
+    if (!availableProfileData && route?.params.userId) {
+      const result = await dispatch(getUser(route?.params.userId));
+
+      if (getUser.pending.match(result)) {
+        setIsLoading(true);
+      } else if (getUser.fulfilled.match(result)) {
+        setIsLoading(false);
+        setProfileData(result.payload);
+      } else {
+        setErrMessage(t("login_error"));
+        setIsLoading(false);
+        setShowNotification(true);
+        setTimeout(() => setShowNotification(false), 4000);
+        console.error("Error fetching user:", result.error.message);
+      }
+    }
+
+    if (route?.params.userId && availableProfileData?.user?.id !== route?.params.userId) {
+      const result = await dispatch(getUser(route.params.userId));
+
+      if (getUser.pending.match(result)) {
+        setIsLoading(true);
+      } else if (getUser.fulfilled.match(result)) {
+        setIsLoading(false);
+        setProfileData(result.payload);
+      } else {
+        setErrMessage(t("login_error"));
+        setIsLoading(false);
+        setShowNotification(true);
+        setTimeout(() => setShowNotification(false), 4000);
+        console.error("Error fetching user:", result.error.message);
+      }
     }
   };
 
   useEffect(() => {
-    loadLanguage();
-    getUserDataFromStorage();
+    getProfileData();
   }, []);
 
+  if (isLoading) {
+    return <ActivityIndicator size='large' color='#0300A3' style={{ flex: 1, justifyContent: "center" }} />;
+  }
+
+  if (!profileData) {
+    return <Text style={{ textAlign: "center", marginTop: 20 }}>Kullanıcı bilgileri yüklenemedi.</Text>;
+  }
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>{t("profile")}</Text>
-
-      <View style={styles.profileSection}>
-        <List.Item
-          title={t("nickname")}
-          description={userData?.username}
-          right={(props) => <Ionicons {...props} name='create-outline' size={20} color='#0300A3' />}
-        />
-        <Divider />
-        <List.Item
-          title={t("email")}
-          description={userData?.email}
-          right={(props) => <Ionicons {...props} name='create-outline' size={20} color='#0300A3' />}
-        />
-        <Divider />
-        <List.Item
-          title={t("birthday")}
-          description={userData?.birthday}
-          right={(props) => <Ionicons {...props} name='create-outline' size={20} color='#0300A3' />}
-        />
-        <Divider />
-        <List.Item
-          title={t("gender")}
-          description={userData?.gender}
-          right={(props) => <Ionicons {...props} name='create-outline' size={20} color='#0300A3' />}
-        />
-        <Divider />
+    <View style={styles.container}>
+      <InAppNotification message={errMessage} type='error' show={showNotification} />
+      <View style={styles.headerContainer}>
+        <Icon name='person' size={30} color='#0300A3' />
+        <Text style={styles.headerTitle}>{t("profile")}</Text>
       </View>
-
-      <View style={styles.languageSwitchContainer}>
-        <Text style={styles.languageSwitchText}>{t("switch_language")}</Text>
-        <Switch value={isSwitchOn} onValueChange={onToggleSwitch} />
+      <Text style={styles.sectionTitle}>{t("account_info")}</Text>
+      <View style={styles.infoItem}>
+        <View>
+          <Text style={styles.infoLabel}>{t("nickname")}</Text>
+          <Text style={styles.infoValue}>{profileData.username}</Text>
+        </View>
+        <TouchableOpacity>
+          <Icon name='pencil' size={24} color='#0300A3' />
+        </TouchableOpacity>
       </View>
-
-      <View style={styles.aboutSection}>
-        <List.Item title={t("privacy_policy")} onPress={() => {}} titleStyle={styles.linkText} />
-        <Divider />
-        <List.Item title={t("terms_and_conditions")} onPress={() => {}} titleStyle={styles.linkText} />
-        <Divider />
+      <View style={styles.infoItem}>
+        <View>
+          <Text style={styles.infoLabel}>{t("email")}</Text>
+          <Text style={styles.infoValue}>{profileData.email}</Text>
+        </View>
+        <TouchableOpacity>
+          <Icon name='pencil' size={24} color='#0300A3' />
+        </TouchableOpacity>
       </View>
-    </ScrollView>
+      <View style={styles.infoItem}>
+        <View>
+          <Text style={styles.infoLabel}>{t("phone_number")}</Text>
+          <Text style={styles.infoValue}>{profileData.phone}</Text>
+        </View>
+        <TouchableOpacity>
+          <Icon name='pencil' size={24} color='#0300A3' />
+        </TouchableOpacity>
+      </View>
+      <Text style={styles.sectionTitle}>{t("about_us")}</Text>
+      <TouchableOpacity style={styles.linkItem}>
+        <Text style={styles.linkLabel}>{t("privacy_policy")}</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.linkItem}>
+        <Text style={styles.linkLabel}>{t("terms_and_conditions")}</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    paddingHorizontal: 20,
-    paddingTop: 30,
+    flex: 1,
     backgroundColor: "#ffffff",
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#0300A3",
-    marginBottom: 20,
-  },
-  profileSection: {
-    marginBottom: 20,
-  },
-  languageSwitchContainer: {
+  headerContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    marginVertical: 20,
+    marginBottom: 20,
   },
-  languageSwitchText: {
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#0300A3",
+    marginLeft: 10,
+  },
+  sectionTitle: {
     fontSize: 16,
-    color: "#0300A3",
-    fontWeight: "600",
-  },
-  aboutSection: {
+    fontWeight: "bold",
+    color: "gray",
     marginTop: 20,
+    marginBottom: 10,
   },
-  linkText: {
+  infoItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#F1F1F1",
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  infoLabel: {
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  infoValue: {
+    color: "#000",
+  },
+  linkItem: {
+    backgroundColor: "#F1F1F1",
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  linkLabel: {
     color: "#0300A3",
-    fontWeight: "600",
+    fontWeight: "bold",
   },
 });
 

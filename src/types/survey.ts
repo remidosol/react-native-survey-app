@@ -26,7 +26,7 @@ export type StoredSurveyData = {
     isSurveyCompleted: boolean;
     currentQuestionIndex: number;
     lastAnswerDate: string;
-    userId: string;
+    userId: number;
     title: string;
   };
 };
@@ -38,6 +38,6 @@ export type SurveyDetailDataItem = {
   currentQuestionIndex: number;
   score?: number;
   lastAnswerDate: string;
-  userId: string;
+  userId: number;
   title: string;
 };

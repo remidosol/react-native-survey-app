@@ -16,7 +16,8 @@ import { BottomSheetView } from "@gorhom/bottom-sheet";
 
 const SignUpScreen = () => {
   const { t } = useTranslation();
-  const [userId, setUserId] = useState("");
+  const [userId, setUserId] = useState<number | null>(null);
+  const [gender, setGender] = useState("");
   const [email, setEmail] = useState("");
   const [nickname, setNickname] = useState("");
   const [password, setPassword] = useState("");
@@ -24,9 +25,10 @@ const SignUpScreen = () => {
   const navigation = useNavigation<StackNavigationProp<AuthStackParamList, "SignUp">>();
 
   const handleSignUp = async () => {
+    setUserId(1);
     const isKvkkAlreadyAccepted = await isKvkkAccepted();
     if (!isKvkkAlreadyAccepted) {
-      navigation.push("KVKK", { userId: userId });
+      navigation.push("KVKK", { userId: userId ?? 1 });
     }
   };
 
@@ -79,9 +81,11 @@ const styles = StyleSheet.create({
     height: 50,
     borderColor: "#ccc",
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: 6,
     paddingHorizontal: 10,
     marginBottom: 20,
+    backgroundColor: "#FFFFFF",
+    opacity: 0.8,
   },
   button: {
     backgroundColor: "#0000FF",

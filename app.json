@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "survey-app",
-    "slug": "survey-app",
+    "name": "react-native-survey-app",
+    "slug": "react-native-survey-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
