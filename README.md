@@ -152,6 +152,3 @@ To enable Hermes engine for the app:
 ## License
 
 [MIT](LICENSE)
-
----
-Thank you for using the Survey App! Feel free to contribute and report any issues you encounter.

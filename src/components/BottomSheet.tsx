@@ -3,7 +3,7 @@ import React, { useMemo, useRef } from "react";
 import { StyleSheet } from "react-native";
 
 const CustomBottomSheet = (props: BottomSheetProps) => {
-  const snapPoints = useMemo(() => ["58%", "65%"], []);
+  const snapPoints = useMemo(() => ["58%", "80%"], []);
   const bottomSheetRef = useRef<BottomSheet>(null);
 
   return (
