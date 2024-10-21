@@ -15,6 +15,7 @@ import { CommonSliderSvgAnimatedProps } from "../../types/props";
 import { formatTime } from "../../utils/functions";
 import useSaveSurveyData from "../../hooks/useSaveSurveyData";
 import { SurveyAnswer } from "../../types/survey";
+import { useAppSelector } from "../../store";
 
 type SurveyScreenNavigationProp = StackNavigationProp<AppStackParamList, "Survey">;
 
@@ -31,6 +32,7 @@ const SurveyScreen = ({ navigation, route }: Props) => {
   const [language, setLanguage] = useState<"en" | "tr">("tr");
   const [surveyAnswers, setSurveyAnswers] = useState<SurveyAnswer[]>([]);
   const [isSurveyCompleted, setIsSurveyCompleted] = useState(false);
+  const userId = useAppSelector((state) => state.auth.userId);
 
   const surveyQuestionsData = route.params.surveyQuestionsData;
 
@@ -39,7 +41,7 @@ const SurveyScreen = ({ navigation, route }: Props) => {
     title: route?.params.title ?? "",
     surveyAnswers,
     isSurveyCompleted,
-    userId: route.params.userId ?? "",
+    userId: route?.params.userId ?? userId ?? 1,
     currentQuestionIndex: questionIndex,
   });
 
@@ -99,7 +101,13 @@ const SurveyScreen = ({ navigation, route }: Props) => {
 
   return (
     <View style={styles.container}>
-      <SurveyHeader timeLeft={timeLeft} totalTime={1800} progress={progress} onHomePress={handleHomePress} />
+      <SurveyHeader
+        title={route?.params.title ?? ""}
+        timeLeft={timeLeft}
+        totalTime={1800}
+        progress={progress}
+        onHomePress={handleHomePress}
+      />
 
       <View style={styles.content}>
         {surveyQuestionsData.length > 0 ? (
@@ -167,7 +175,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   nextButton: {
-    backgroundColor: "#0000FF",
+    backgroundColor: "#0300A3",
     paddingVertical: 10,
     borderRadius: 30,
     paddingHorizontal: 20,

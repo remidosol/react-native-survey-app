@@ -81,18 +81,18 @@ const LoginScreen = ({ navigation, route: _route }: Props) => {
       console.log(result);
       setUserData(result.payload);
       setUserId(1);
+
+      const isKvkkAlreadyAccepted = await isKvkkAccepted();
+
+      console.log(isKvkkAlreadyAccepted);
+
+      if (!isKvkkAlreadyAccepted) {
+        navigation?.push("KVKK", { userId: userId ?? 1, token });
+      }
     } else if (getUser.rejected.match(result)) {
       setIsLoading(false);
       setErrMessage(t("login_error"));
       // console.error("Error logging in:", result.error.message);
-    }
-
-    const isKvkkAlreadyAccepted = await isKvkkAccepted();
-
-    console.log(isKvkkAlreadyAccepted);
-
-    if (!isKvkkAlreadyAccepted) {
-      navigation?.push("KVKK", { userId: userId ?? 1, token });
     }
 
     navigation?.push("MainTabs", { userId: userId ?? 1, token });

@@ -12,12 +12,13 @@ import { saveKvkkState } from "../../utils/kvkkStorage";
 import Button from "../../components/Button";
 import CustomBottomSheet from "../../components/BottomSheet";
 import { BottomSheetView } from "@gorhom/bottom-sheet";
+import { AppStackParamList } from "../../navigation/AppNavigator";
 
-type KvkkScreenNavigationProp = StackNavigationProp<AuthStackParamList, "KVKK">;
+type KvkkScreenNavigationProp = StackNavigationProp<AppStackParamList, "KVKK">;
 
 type Props = {
   navigation?: KvkkScreenNavigationProp;
-  route?: RouteProp<AuthStackParamList, "KVKK">;
+  route?: RouteProp<AppStackParamList, "KVKK">;
 };
 
 const KvkkScreen = ({ navigation, route }: Props) => {
@@ -29,6 +30,8 @@ const KvkkScreen = ({ navigation, route }: Props) => {
     if (accepted) {
       navigation?.navigate("MainTabs", { userId: route?.params.userId, token: route?.params.token });
     }
+
+    navigation?.navigate("Login", {});
   };
 
   return (

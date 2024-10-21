@@ -11,10 +11,11 @@ interface SurveyHeaderProps {
   timeLeft: number;
   totalTime: number;
   progress: number;
+  title: string;
   onHomePress: () => void;
 }
 
-const SurveyHeader: React.FC<SurveyHeaderProps> = ({ timeLeft, totalTime, progress, onHomePress }) => {
+const SurveyHeader: React.FC<SurveyHeaderProps> = ({ timeLeft, totalTime, progress, title, onHomePress }) => {
   const pointerAnimation = new Animated.Value(timeLeft);
 
   useEffect(() => {
@@ -69,14 +70,17 @@ const SurveyHeader: React.FC<SurveyHeaderProps> = ({ timeLeft, totalTime, progre
       </View>
 
       <View style={styles.questionProgressBarContainer}>
-        <Text style={styles.questionProgressBarText}>Anket Konu Başlığı</Text>
-        <ProgressBar
-          indeterminate={false}
-          progress={progress}
-          color='#fff'
-          style={styles.questionProgressBar}
-          fillStyle={{}}
-        />
+        <Text style={styles.questionProgressBarText}>{title}</Text>
+        <View style={styles.questionProgressBarStage}>
+          <ProgressBar
+            indeterminate={false}
+            progress={progress}
+            color='#fff'
+            style={styles.questionProgressBar}
+            fillStyle={{}}
+          />
+          <Text style={styles.questionProgressBarText}>{progress / (1 / 10)}/10</Text>
+        </View>
       </View>
     </View>
   );
@@ -84,20 +88,22 @@ const SurveyHeader: React.FC<SurveyHeaderProps> = ({ timeLeft, totalTime, progre
 
 const styles = StyleSheet.create({
   header: {
-    flex: 1,
+    flex: 0.25,
+    flexDirection: "column",
+    justifyContent: "flex-start",
     backgroundColor: "#0300A3",
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
     paddingHorizontal: 20,
-    paddingTop: 110,
+    paddingTop: 50,
     paddingBottom: 20,
-    alignItems: "center",
+    alignItems: "flex-start",
     // position: "relative",
   },
   homeIcon: {
-    position: "absolute",
-    left: 20,
-    top: 40,
+    // position: "absolute",
+    // left: 20,
+    // top: 40,
   },
   timerContainer: {
     position: "absolute",
@@ -112,12 +118,21 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   questionProgressBarContainer: {
-    alignContent: "flex-start",
-    marginTop: 60,
+    alignContent: "center",
+    alignSelf: "center",
+    marginTop: 40,
+  },
+  questionProgressBarStage: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignSelf: "center",
+    marginTop: 5,
+    marginHorizontal: 5,
   },
   questionProgressBar: {
-    marginBottom: 20,
-    width: width - 40,
+    marginTop: 8,
+    marginHorizontal: 5,
+    width: width - 80,
     height: 5,
   },
   questionProgressBarText: {
